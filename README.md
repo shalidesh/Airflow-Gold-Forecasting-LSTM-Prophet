@@ -1,0 +1,1 @@
+"proxy": "http://backend:5000"
