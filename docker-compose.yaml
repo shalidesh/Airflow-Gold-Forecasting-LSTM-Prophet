@@ -174,10 +174,20 @@ services:
       - -c
       - airflow
 
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
   backend:
     build: ./backend
     ports:
       - "5000:5000"
+    depends_on:
+      - mongo
 
   frontend:
     build: ./frontend
@@ -189,3 +199,4 @@ services:
 
 volumes:
   postgres-db-volume:
+  mongo_data:
