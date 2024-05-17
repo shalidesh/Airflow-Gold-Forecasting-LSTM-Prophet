@@ -10,6 +10,7 @@ function TopBar() {
 
 
     const handleLogout = () => {
+        console.log("logout clicked----------------------");
         dispatch({ type: "LOGOUT" });
       };
 

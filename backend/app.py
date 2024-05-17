@@ -11,11 +11,10 @@ nltk.download('punkt')
 from flask_cors import CORS
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/gold_data"
+app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
 CORS(app)
 
 mongo = PyMongo(app)
-
 
 news_df = os.path.join("data_tables", "gold_post_data.csv")
 
@@ -77,26 +76,6 @@ def get_first_four_sentences(text):
     sentences = nltk.tokenize.sent_tokenize(text)
     return ' '.join(sentences[:2])
 
-
-
-# @app.route('/user/news', methods=['GET'])
-# def news():
-#     print("called")
-#     print("called")
-#     print("called")
-    # try:
-    #     df=pd.read_csv(news_df)
-    #     df['sample_text'] = df['sample_text'].apply(get_first_four_sentences)
-
-    
-    # except Exception as e:
-    #     print(e)
-    #     return jsonify({"error": e})
-    
-    # return jsonify({"message": "Hello from Flask!"})
-
-
-    # return jsonify(df.to_dict(orient='records'))
 
 @app.route('/user/news', methods=['GET'])
 def news():
