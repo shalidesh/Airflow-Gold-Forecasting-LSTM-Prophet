@@ -9,9 +9,14 @@ import os
 import nltk
 nltk.download('punkt')
 from flask_cors import CORS
+import yfinance as yf
+from bs4 import BeautifulSoup
+import pandas as pd
+import requests
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
+# app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
+app.config["MONGO_URI"] = "mongodb://localhost:27017/gold_data"
 CORS(app)
 
 mongo = PyMongo(app)
@@ -22,6 +27,37 @@ news_df = os.path.join("data_tables", "gold_post_data.csv")
 @app.route('/', methods=['GET'])
 def main():
    return jsonify({"message": "Hello from Flask!"})
+
+
+@app.route('/gold_price', methods=['GET'])
+def get_gold_price():
+    headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+                }
+    
+    link='https://www.kitco.com/'
+    
+    response = requests.get(link,headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    header = soup.find("div", class_='flex justify-between gap-2')
+
+    # Find all h3 tags within the header
+    h3_tags = header.find_all('h3')
+
+    texts = [h3.text for h3 in h3_tags]
+
+    bid, ask, change, performance = texts
+
+    price_list={
+
+        'bid':bid,
+        'ask':ask,
+        'change':change,
+        'performance':performance
+    }
+
+    return jsonify(price_list)
 
 
 @app.route('/auth/register', methods=['POST'])
