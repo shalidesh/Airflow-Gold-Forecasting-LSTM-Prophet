@@ -6,14 +6,17 @@ import schema from "./schema";
 
 ReactFC.fcRoot(FusionCharts, TimeSeries);
 
+let currentDate = new Date();
+let formattedDate = currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1) + '-' + currentDate.getDate();
+
 const chart_props = {
   timeseriesDs: {
     type: "timeseries",
-    width: "80%",
+    width: "100%",
     height: "600",
     dataEmptyMessage: "Fetching data...",
     dataSource: {
-      caption: { text: "Gold Prce Movement 2014-2024" },
+      caption: { text: `Gold Price Movement Untill ${formattedDate}`},
       data: null,
       yAxis: [
         {
@@ -27,15 +30,15 @@ const chart_props = {
     }
   }
 };
-const API_URL =
-  "https://raw.githubusercontent.com/fusioncharts/dev_centre_docs/master/assets/datasources/fusiontime/examples/online-sales-single-series/data.json";
 
   
 function ChartViewer() {
+  
   const [ds, setds] = useState(chart_props);
+
   const loadData = useCallback(async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch('http://localhost:5000/gold_price_history');
       const data = await response.json();
       const fusionTable = new FusionCharts.DataStore().createDataTable(
         data,
@@ -55,7 +58,7 @@ function ChartViewer() {
   }, [loadData]);
 
   return (
-    <div>
+    <div style={{ marginTop: '10px', marginBottom: '10px', marginLeft: '0px', marginRight: '0px' }}>
       <ReactFC {...ds.timeseriesDs} />
     </div>
   );
