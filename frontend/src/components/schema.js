@@ -5,7 +5,7 @@ const schema = [
     format: "%-m/%-d/%Y"
   },
   {
-    name: "Sales",
+    name: "Gold Price",
     type: "number"
   }
 ];

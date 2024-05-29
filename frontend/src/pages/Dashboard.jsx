@@ -7,10 +7,10 @@ function Dashboard() {
 
     const [price, setPrice] = useState({
 
-        'bid':"bid",
-        'ask':"ask",
-        'change':"change",
-        'performance':"performance"
+        'bid':"0",
+        'ask':"0",
+        'change':"0",
+        'performance':"0"
     });
 
     useEffect(() => {
@@ -23,7 +23,7 @@ function Dashboard() {
             } catch (error) {
                 console.log("Error:", error);
             }
-        }, 10000);  // 60000 milliseconds = 1 minute
+        }, 60000);  // 60000 milliseconds = 1 minute
     
         // Clear the interval when the component unmounts
         return () => clearInterval(interval);
@@ -36,83 +36,12 @@ function Dashboard() {
         ];
     return (
 
-    <div className="container-fluid">
+    <div className="container-fluid"  style={{ marginTop: '10px', marginBottom: '10px', marginLeft: '20px', marginRight: '20px' }}>
 
         <Breadcrumbs breadcrumbs={breadcrumbs} />
 
-        <div className="row">
-
-            {/* <div className="col-xl-4 col-md-6 mb-4">
-                <div className="card border-left-primary shadow h-100 py-2">
-                    <div className="card-body">
-                        <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
-                                <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Gold Price(USD)</div>
-                                <div className="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                            </div>
-                            <div className="col-auto">
-                                <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="col-xl-4 col-md-6 mb-4">
-                <div className="card border-left-success shadow h-100 py-2">
-                    <div className="card-body">
-                        <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
-                                <div className="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Gold Price(LKR)</div>
-                                <div className="h5 mb-0 font-weight-bold text-gray-800">Rs 215,000</div>
-                            </div>
-                            <div className="col-auto">
-                                <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="col-xl-4 col-md-6 mb-4">
-                <div className="card border-left-warning shadow h-100 py-2">
-                    <div className="card-body">
-                        <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
-                                <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Sea Street Price(LKR)</div>
-                                <div className="h5 mb-0 font-weight-bold text-gray-800">Rs 230,000</div>
-                            </div>
-                            <div className="col-auto">
-                                 <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
-
-            {/* <div className="col-xl-3 col-md-6 mb-4">
-                <div className="card border-left-warning shadow h-100 py-2">
-                    <div className="card-body">
-                        <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
-                                <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Pending Requests</div>
-                                <div className="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                            </div>
-                            <div className="col-auto">
-                                <i className="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
-
-        </div>
-
-        <div className="row">
+    
+        <div className="row" style={{ marginTop: '10px', marginBottom: '10px', marginLeft: '20px', marginRight: '20px' }}>
 
             <div className="col-xl-3 col-md-6 mb-4">
                 <div className="card border-left-primary shadow h-100 py-2">

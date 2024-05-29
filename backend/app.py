@@ -13,6 +13,7 @@ import yfinance as yf
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
+import datetime
 
 app = Flask(__name__)
 # app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
@@ -22,6 +23,7 @@ CORS(app)
 mongo = PyMongo(app)
 
 news_df = os.path.join("data_tables", "gold_post_data.csv")
+prediction_df = os.path.join("data_tables", "prediction.csv")
 
 
 @app.route('/', methods=['GET'])
@@ -118,6 +120,36 @@ def news():
     df=pd.read_csv(news_df)
     df = df.where(pd.notnull(df), None) 
     return jsonify(df.to_dict(orient='records'))
+
+@app.route('/gold_price_history', methods=['GET'])
+def gold_price_history():
+    gold_ticker = 'GC=F'
+
+    two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
+  
+    end_date = two_days_ago.strftime('%Y-%m-%d')
+    
+    gold_data = yf.download(gold_ticker, start="2014-01-01", end=end_date)
+    
+    gold_data_reset = gold_data.reset_index()
+   
+    gold_data_selected = gold_data_reset[['Date', 'Close']]
+    
+    gold_data_list = gold_data_selected.values.tolist()
+    
+    gold_data_list = [[date.strftime('%m/%d/%Y'), close] for date, close in gold_data_list]
+
+    return gold_data_list
+
+
+@app.route('/forecast_prophet', methods=['GET'])
+def gold_price_Predict():
+
+    df=pd.read_csv(prediction_df)
+    df=df[['ds','yhat','yhat_lower','yhat_upper']]
+    df = df.where(pd.notnull(df), None) 
+    return jsonify(df.to_dict(orient='records'))
+
 
 
 @app.errorhandler(404)
