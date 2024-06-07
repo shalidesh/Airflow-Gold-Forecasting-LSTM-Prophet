@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 import datetime
+import json
+from prophet.serialize import model_to_json, model_from_json
 
 app = Flask(__name__)
 # app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
@@ -24,6 +26,25 @@ mongo = PyMongo(app)
 
 news_df = os.path.join("data_tables", "gold_post_data.csv")
 prediction_df = os.path.join("data_tables", "prediction.csv")
+
+# Load model
+with open('models/model_prophet.json', 'r') as fin:
+    model = model_from_json(json.load(fin)) 
+
+# When you want to load the models for prediction, read them from the files
+with open('models/model_regressor1.json', 'r') as fin:
+    model_regressor1 = model_from_json(json.load(fin))
+
+with open('models/model_regressor2.json', 'r') as fin:
+    model_regressor2 = model_from_json(json.load(fin))
+
+with open('models/model_regressor3.json', 'r') as fin:
+    model_regressor3 = model_from_json(json.load(fin))
+
+with open('models/model_regressor4.json', 'r') as fin:
+    model_regressor4 = model_from_json(json.load(fin))
+
+
 
 
 @app.route('/', methods=['GET'])
@@ -125,7 +146,7 @@ def news():
 def gold_price_history():
     gold_ticker = 'GC=F'
 
-    two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
+    two_days_ago = datetime.datetime.now() - datetime.timedelta(days=1)
   
     end_date = two_days_ago.strftime('%Y-%m-%d')
     
@@ -142,15 +163,59 @@ def gold_price_history():
     return gold_data_list
 
 
-@app.route('/forecast_prophet', methods=['GET'])
+# @app.route('/forecast_prophet', methods=['GET'])
+# def gold_price_Predict():
+
+#     df=pd.read_csv(prediction_df)
+#     df=df[['ds','yhat','yhat_lower','yhat_upper']]
+#     df = df.where(pd.notnull(df), None) 
+#     return jsonify(df.to_dict(orient='records'))
+
+@app.route('/forecast_prophet', methods=['POST'])
 def gold_price_Predict():
+    data = request.get_json()
+    date_string = data['date'].replace("Z", "")
+    request_date = pd.to_datetime(date_string)
 
-    df=pd.read_csv(prediction_df)
-    df=df[['ds','yhat','yhat_lower','yhat_upper']]
-    df = df.where(pd.notnull(df), None) 
-    return jsonify(df.to_dict(orient='records'))
+    today_date = pd.to_datetime('today').normalize()
+    dataset_last_given_date = pd.to_datetime('2024-03-25')
 
+    print(today_date)
+    print(dataset_last_given_date)
+    
+    day_count_difference_lastday_and_today = (today_date - dataset_last_given_date).days
+    day_count_difference_requested_date_and_today = (request_date - today_date).days
 
+    print(f"Day count difference: {day_count_difference_lastday_and_today}")
+    print(f"Day count difference: {day_count_difference_requested_date_and_today}")
+
+    period=day_count_difference_lastday_and_today+day_count_difference_requested_date_and_today
+
+    future_regressor = model.make_future_dataframe(periods=period)
+    print(future_regressor)
+    # Make predictions for each regressor
+    forecast_regressor1 = model_regressor1.predict(future_regressor)
+    forecast_regressor2 = model_regressor2.predict(future_regressor)
+    forecast_regressor3 = model_regressor3.predict(future_regressor)
+    forecast_regressor4 = model_regressor4.predict(future_regressor)
+
+    # Prepare future dataframe for main model
+    future = future_regressor.copy()
+    future['regressor1'] = forecast_regressor1['yhat']
+    future['regressor2'] = forecast_regressor2['yhat']
+    future['regressor3'] = forecast_regressor3['yhat']
+    future['regressor4'] = forecast_regressor4['yhat']
+
+    forecast = model.predict(future)
+
+    # Smooth the forecasted values using a moving average
+    forecast['yhat_smooth'] = forecast['yhat'].rolling(window=7, min_periods=1).max()
+    forecast['yhat_lower_smooth'] = forecast['yhat_lower'].rolling(window=5, min_periods=1).mean()
+    forecast['yhat_upper_smooth'] = forecast['yhat_upper'].rolling(window=5, min_periods=1).max()
+
+    response_dataframe=forecast[["ds","yhat_smooth","yhat_lower_smooth","yhat_upper_smooth"]]
+
+    return jsonify(response_dataframe.to_dict(orient='records'))
 
 @app.errorhandler(404)
 def not_found(error=None):
