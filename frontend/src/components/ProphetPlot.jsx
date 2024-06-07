@@ -3,34 +3,22 @@ import Plot from 'react-plotly.js';
 import axios from "axios";
 import ForecastTable from './ForecastTable';
 
-function ProphetPlot() {
+function ProphetPlot(graphdata) {
 
-  const [graphdata, setGraphData] = useState([]);
+
 
   useEffect(() => {
 
-    const fetchData = async () => {
+    console.log(graphdata);
 
-      try {
-        const response = await axios.get(`/forecast_prophet`,{
-          "date":"2024-05-12"
-        });
-        console.log(response.data);
-        setGraphData(response.data)
 
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
-    fetchData();
     
-  }, []);
+  }, [graphdata]);
 
   const plotData = [
     {
       x: graphdata.map(data => data.ds),
-      y: graphdata.map(data => data.yhat),
+      y: graphdata.map(data => data.yhat_smooth),
       type: 'scatter',
       mode: 'lines',
       name: 'Forecast',
@@ -38,7 +26,7 @@ function ProphetPlot() {
     },
     {
       x: graphdata.map(data => data.ds),
-      y: graphdata.map(data => data.yhat_lower),
+      y: graphdata.map(data => data.yhat_lower_smooth),
       type: 'scatter',
       mode: 'lines',
       name: 'Lower Bound',
@@ -46,7 +34,7 @@ function ProphetPlot() {
     },
     {
       x: graphdata.map(data => data.ds),
-      y: graphdata.map(data => data.yhat_upper),
+      y: graphdata.map(data => data.yhat_upper_smooth),
       type: 'scatter',
       mode: 'lines',
       name: 'Upper Bound',

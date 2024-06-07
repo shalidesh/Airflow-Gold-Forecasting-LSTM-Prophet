@@ -23,7 +23,7 @@ function Dashboard() {
             } catch (error) {
                 console.log("Error:", error);
             }
-        }, 60000);  // 60000 milliseconds = 1 minute
+        }, 1000);  // 60000 milliseconds = 1 minute
     
         // Clear the interval when the component unmounts
         return () => clearInterval(interval);
