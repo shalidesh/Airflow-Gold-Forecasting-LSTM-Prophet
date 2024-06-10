@@ -3,11 +3,15 @@ import Pagination from 'react-bootstrap/Pagination';
 
 function ForecastTable({ data}) {
 
+    console.log(data);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(20);
 
+    const reversedData = [...data].reverse();
+
     // Calculate the number of pages
-    const pageCount = Math.ceil(data.length / itemsPerPage);
+    const pageCount = Math.ceil(reversedData.length / itemsPerPage);
 
     // Create an array of page numbers
     let pages = [];
@@ -18,7 +22,7 @@ function ForecastTable({ data}) {
     // Get the items for the current page
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = reversedData.slice(indexOfFirstItem, indexOfLastItem);
 
   
 
@@ -38,9 +42,9 @@ function ForecastTable({ data}) {
                         {currentItems.map((row, index) => (
                             <tr key={index}>
                                 <th scope="row">{row.ds}</th>
-                                <td>{row.yhat}</td>
-                                <td>{row.yhat_lower}</td>
-                                <td>{row.yhat_upper}</td>
+                                <td>{row.yhat_smooth}</td>
+                                <td>{row.yhat_lower_smooth}</td>
+                                <td>{row.yhat_upper_smooth}</td>
                             </tr>
                         ))}
                     </tbody>

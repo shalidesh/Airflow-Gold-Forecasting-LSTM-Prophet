@@ -3,17 +3,37 @@ import Plot from 'react-plotly.js';
 import axios from "axios";
 import ForecastTable from './ForecastTable';
 
-function ProphetPlot(graphdata) {
+function ProphetPlot(startDate) {
 
-
+  const [graphdata, setGraphData] = useState([]);
+  const [lastdata, setLastData] = useState({});
 
   useEffect(() => {
 
-    console.log(graphdata);
+    const fetchData = async () => {
 
+      console.log(startDate.startDate);
 
+      try {
+        const response = await axios.post(`/forecast_prophet`,{
+          "date":startDate.startDate
+        });
+
+        console.log(graphdata[-1]);
+
+       
+        console.log(response.data);
+        setGraphData(response.data)
+        setLastData(response.data[response.data.length - 1]);
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchData();
     
-  }, [graphdata]);
+  }, [startDate]);
 
   const plotData = [
     {
@@ -45,14 +65,14 @@ function ProphetPlot(graphdata) {
   return (
 
       <div>
-        <h1 className='mt-5 mb-3'>Rs 1,650,000 (2024-May-29)</h1>
-        <p>Upper Bound - Rs 1,750,000</p>
-        <p>Lower Bound - Rs 1,550,000</p>
+         <h1 className='mt-5 mb-3'>Rs {lastdata.yhat_smooth} ({lastdata.ds})</h1>
+        <p>Upper Bound - Rs {lastdata.yhat_upper_smooth}</p>
+        <p>Lower Bound - Rs {lastdata.yhat_lower_smooth}</p>
         <Plot
           data={plotData}
           layout={ {width: 1000, height: 600, title: 'Gold Price Forecast'} }
         />
-        <ForecastTable data={graphdata} />
+        <ForecastTable data={graphdata.slice(-40)} />
       </div>
    
   )
