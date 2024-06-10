@@ -9,22 +9,22 @@ function ProphetCharts() {
 
 
     const [startDate, setStartDate] = useState(new Date());
-    const [graphdata, setGraphData] = useState([]);
+    // const [graphdata, setGraphData] = useState([]);
 
-    const handleSubmit = async () => {
+  //   const handleSubmit = async () => {
      
-      try {
-        const res = await axios.post("/forecast_prophet", {
-          date: startDate,
+  //     try {
+  //       const res = await axios.post("/forecast_prophet", {
+  //         date: startDate,
         
-        });
-        console.log(res.data)
-        setGraphData(res.data)
+  //       });
+  //       console.log(res.data)
+  //       setGraphData(res.data)
         
-      } catch (err) {
+  //     } catch (err) {
         
-    };
-  }
+  //   };
+  // }
 
 
     return (
@@ -38,13 +38,13 @@ function ProphetCharts() {
             />
 
             </div>
-            <div className="col-4">
+            {/* <div className="col-4">
             <button type="button" class="btn btn-primary" onClick={handleSubmit}>Forecast</button>
-            </div>
+            </div> */}
         
         </div>
         
-        <ProphetPlot startDate={graphdata}/>
+        <ProphetPlot startDate={startDate}/>
         
       </div>
     );
