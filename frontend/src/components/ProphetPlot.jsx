@@ -7,12 +7,14 @@ function ProphetPlot(startDate) {
 
   const [graphdata, setGraphData] = useState([]);
   const [lastdata, setLastData] = useState({});
+  const [spin, setSpin] = useState(false);
 
   useEffect(() => {
 
     const fetchData = async () => {
 
       console.log(startDate.startDate);
+      setSpin(true)
 
       try {
         const response = await axios.post(`/forecast_prophet`,{
@@ -25,6 +27,7 @@ function ProphetPlot(startDate) {
         console.log(response.data);
         setGraphData(response.data)
         setLastData(response.data[response.data.length - 1]);
+        setSpin(false)
 
       } catch (error) {
         console.error('Error:', error);
@@ -63,18 +66,27 @@ function ProphetPlot(startDate) {
   ];
 
   return (
-
       <div>
-         <h1 className='mt-5 mb-3'>Rs {lastdata.yhat_smooth} ({lastdata.ds})</h1>
-        <p>Upper Bound - Rs {lastdata.yhat_upper_smooth}</p>
-        <p>Lower Bound - Rs {lastdata.yhat_lower_smooth}</p>
-        <Plot
-          data={plotData}
-          layout={ {width: 1000, height: 600, title: 'Gold Price Forecast'} }
-        />
-        <ForecastTable data={graphdata.slice(-40)} />
+        {spin ? (
+          <div className="d-flex justify-content-center">
+          <div className="spinner-border text-primary" role="status" style={{width: '3rem', height: '3rem'}}>
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+        ) : (
+          <>
+            <h1 className='mt-5 mb-3'>Rs <span style={{ fontSize: '70px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_smooth).toFixed(2)}</span> ({lastdata.ds})</h1>
+            <p>Upper Bound - Rs {parseFloat(lastdata.yhat_upper_smooth).toFixed(2)}</p>
+            <p>Lower Bound - Rs {parseFloat(lastdata.yhat_lower_smooth).toFixed(2)}</p>
+
+            <Plot
+              data={plotData}
+              layout={ {width: 1000, height: 600, title: 'Gold Price Forecast'} }
+            />
+            <ForecastTable data={graphdata.slice(-40)} />
+          </>
+        )}
       </div>
-   
   )
 }
 
