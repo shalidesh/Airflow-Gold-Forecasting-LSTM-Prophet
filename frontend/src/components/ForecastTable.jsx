@@ -42,9 +42,9 @@ function ForecastTable({ data}) {
                         {currentItems.map((row, index) => (
                             <tr key={index}>
                                 <th scope="row">{row.ds}</th>
-                                <td>{row.yhat_smooth}</td>
-                                <td>{row.yhat_lower_smooth}</td>
-                                <td>{row.yhat_upper_smooth}</td>
+                                <td>{parseFloat(row.yhat_smooth).toFixed(2)}</td>
+                                <td>{parseFloat(row.yhat_lower_smooth).toFixed(2)}</td>
+                                <td>{parseFloat(row.yhat_upper_smooth).toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
