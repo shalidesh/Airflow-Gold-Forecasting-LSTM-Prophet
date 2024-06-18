@@ -45,13 +45,6 @@ with open('models/model_regressor4.json', 'r') as fin:
     model_regressor4 = model_from_json(json.load(fin))
 
 
-
-
-@app.route('/', methods=['GET'])
-def main():
-   return jsonify({"message": "Hello from Flask!"})
-
-
 @app.route('/gold_price', methods=['GET'])
 def get_gold_price():
     headers = {
@@ -163,13 +156,11 @@ def gold_price_history():
     return gold_data_list
 
 
-# @app.route('/forecast_prophet', methods=['GET'])
-# def gold_price_Predict():
+def ounce_lkr(x):
+    price = (x / 31.1035) * 8
+    rounded_price = round(price / 100.0) * 100
+    return rounded_price
 
-#     df=pd.read_csv(prediction_df)
-#     df=df[['ds','yhat','yhat_lower','yhat_upper']]
-#     df = df.where(pd.notnull(df), None) 
-#     return jsonify(df.to_dict(orient='records'))
 
 @app.route('/forecast_prophet', methods=['POST'])
 def gold_price_Predict():
@@ -180,14 +171,8 @@ def gold_price_Predict():
     today_date = pd.to_datetime('today').normalize()
     dataset_last_given_date = pd.to_datetime('2024-03-25')
 
-    print(today_date)
-    print(dataset_last_given_date)
-    
     day_count_difference_lastday_and_today = (today_date - dataset_last_given_date).days
     day_count_difference_requested_date_and_today = (request_date - today_date).days
-
-    print(f"Day count difference: {day_count_difference_lastday_and_today}")
-    print(f"Day count difference: {day_count_difference_requested_date_and_today}")
 
     period=day_count_difference_lastday_and_today+day_count_difference_requested_date_and_today
 
@@ -214,6 +199,9 @@ def gold_price_Predict():
     forecast['yhat_upper_smooth'] = forecast['yhat_upper'].rolling(window=5, min_periods=1).max()
 
     response_dataframe=forecast[["ds","yhat_smooth","yhat_lower_smooth","yhat_upper_smooth"]]
+
+    cols = [col for col in response_dataframe.columns if col != 'ds']
+    response_dataframe[cols] = response_dataframe[cols].applymap(ounce_lkr)
 
     return jsonify(response_dataframe.to_dict(orient='records'))
 
