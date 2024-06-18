@@ -1,7 +1,5 @@
 from airflow import DAG
 from datetime import datetime, timedelta
-from airflow.utils.email import send_email
-from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from components.post_links_extraction import scrape_gold_news_urls
 from components.utils.send_email import success_email,failure_email
@@ -24,7 +22,7 @@ default_args = {
 dag = DAG(
     dag_id="news_pipeline_v20",
     default_args=default_args,
-    schedule_interval="@daily"
+    schedule_interval='0 0 * * *'
 )
 
 gold_news_urls = PythonOperator(
@@ -57,7 +55,6 @@ table_save_to_the_files = PythonOperator(
 
 
 # Set the order of tasks
-
 gold_news_content_from_urls.set_upstream(gold_news_urls)
 table_save_to_the_files.set_upstream(gold_news_content_from_urls)
 
