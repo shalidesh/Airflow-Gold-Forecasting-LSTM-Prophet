@@ -25,7 +25,7 @@ function Register() {
           console.log("---------responce recieved-----------");
           console.log(res.data);
           console.log("---------responce recieved-----------");
-        //   res.data && window.location.replace("/");
+          res.data && window.location.replace("/");
         } catch (err) {
           setError(true);
         }

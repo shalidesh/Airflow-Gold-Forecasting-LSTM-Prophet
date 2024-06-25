@@ -45,6 +45,11 @@ with open('models/model_regressor4.json', 'r') as fin:
     model_regressor4 = model_from_json(json.load(fin))
 
 
+forecast_cbsl_diffrence=3900
+cdbsl_sea_street_difference=10700
+adding_constant_value_upper=4000
+
+
 @app.route('/gold_price', methods=['GET'])
 def get_gold_price():
     headers = {
@@ -193,12 +198,16 @@ def gold_price_Predict():
 
     forecast = model.predict(future)
 
-    # Smooth the forecasted values using a moving average
-    forecast['yhat_smooth'] = forecast['yhat'].rolling(window=7, min_periods=1).max()
-    forecast['yhat_lower_smooth'] = forecast['yhat_lower'].rolling(window=5, min_periods=1).mean()
-    forecast['yhat_upper_smooth'] = forecast['yhat_upper'].rolling(window=5, min_periods=1).max()
+    # forecast['yhat_manipulation'] = forecast['yhat']+forecast_cbsl_diffrence+cdbsl_sea_street_difference
+    # forecast['yhat_lower_manipulation']=forecast['yhat'] 
+    # forecast['yhat_upper_manipulation']=forecast['yhat_upper']+adding_constant_value_upper
 
-    response_dataframe=forecast[["ds","yhat_smooth","yhat_lower_smooth","yhat_upper_smooth"]]
+    # Smooth the forecasted values using a moving average
+    forecast['yhat_manipulation_smooth'] = forecast['yhat'].rolling(window=7, min_periods=1).max()
+    forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower'].rolling(window=5, min_periods=1).mean()
+    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper'].rolling(window=5, min_periods=1).max()
+
+    response_dataframe=forecast[["ds","yhat_manipulation_smooth","yhat_lower_manipulation_smooth","yhat_upper_manipulation_smooth"]]
 
     cols = [col for col in response_dataframe.columns if col != 'ds']
     response_dataframe[cols] = response_dataframe[cols].applymap(ounce_lkr)

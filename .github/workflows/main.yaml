@@ -1,0 +1,23 @@
+name: Docker Workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Check if Docker Compose is running
+      run: |
+        if [ $(sudo docker compose ps -q) ]; then
+          sudo docker compose down
+        fi
+
+    - name: Start Docker Compose
+      run: |
+        sudo docker compose up -d --scale api=3

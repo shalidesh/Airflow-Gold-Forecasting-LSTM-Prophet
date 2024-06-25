@@ -41,7 +41,7 @@ function ProphetPlot(startDate) {
   const plotData = [
     {
       x: graphdata.map(data => data.ds),
-      y: graphdata.map(data => data.yhat_smooth),
+      y: graphdata.map(data => data.yhat_manipulation_smooth),
       type: 'scatter',
       mode: 'lines',
       name: 'Forecast',
@@ -49,7 +49,7 @@ function ProphetPlot(startDate) {
     },
     {
       x: graphdata.map(data => data.ds),
-      y: graphdata.map(data => data.yhat_lower_smooth),
+      y: graphdata.map(data => data.yhat_lower_manipulation_smooth),
       type: 'scatter',
       mode: 'lines',
       name: 'Lower Bound',
@@ -57,7 +57,7 @@ function ProphetPlot(startDate) {
     },
     {
       x: graphdata.map(data => data.ds),
-      y: graphdata.map(data => data.yhat_upper_smooth),
+      y: graphdata.map(data => data.yhat_upper_manipulation_smooth),
       type: 'scatter',
       mode: 'lines',
       name: 'Upper Bound',
@@ -75,9 +75,9 @@ function ProphetPlot(startDate) {
         </div>
         ) : (
           <>
-            <h1 className='mt-5 mb-3'>Rs <span style={{ fontSize: '70px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_smooth).toFixed(2)}</span> ({lastdata.ds})</h1>
-            <p>Upper Bound - Rs <span style={{ fontSize: '20px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_upper_smooth).toFixed(2)}</span> </p>
-            <p>Lower Bound - Rs  <span style={{ fontSize: '20px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_lower_smooth).toFixed(2)}</span></p>
+            <h1 className='mt-5 mb-3'>Rs <span style={{ fontSize: '70px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_manipulation_smooth).toFixed(2)}</span> ({lastdata.ds})</h1>
+            <p>Upper Bound - Rs <span style={{ fontSize: '20px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_upper_manipulation_smooth).toFixed(2)}</span> </p>
+            <p>Lower Bound - Rs  <span style={{ fontSize: '20px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_lower_manipulation_smooth).toFixed(2)}</span></p>
 
             <Plot
               data={plotData}

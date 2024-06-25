@@ -50,9 +50,13 @@ function Login() {
                         <label class="form-check-label" for="form1Example3"> Remember password </label>
                     </div>
 
-                    {/* <Link className="link" to="/"> */}
-                        <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
-                    {/* </Link> */}
+                    
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+                    <Link className="link" to="/register">
+                          <p>Already Have a Acoount?   <span>SIGNUP</span></p>                     
+                    </Link>
+                        
+                 
 
                 </form>
 
