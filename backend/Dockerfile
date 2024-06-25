@@ -1,7 +1,13 @@
 FROM python:3.8
+
 WORKDIR /backend
+
+COPY ./requirements.txt /backend
+
+RUN pip install --no-cache-dir --requirement /backend/requirements.txt
+
 COPY . /backend
-RUN pip install -r requirements.txt
+
 EXPOSE 5000
-# Run app.py when the container launches
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+
+CMD [ "python","app.py"]
