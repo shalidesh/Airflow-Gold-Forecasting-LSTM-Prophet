@@ -45,9 +45,9 @@ with open('models/model_regressor4.json', 'r') as fin:
     model_regressor4 = model_from_json(json.load(fin))
 
 
-forecast_cbsl_diffrence=3900
-cdbsl_sea_street_difference=10700
-adding_constant_value_upper=4000
+forecast_cbsl_diffrence=4000
+cdbsl_sea_street_difference=9500
+adding_constant_value_upper=15000
 
 
 @app.route('/gold_price', methods=['GET'])
@@ -174,7 +174,7 @@ def gold_price_Predict():
     request_date = pd.to_datetime(date_string)
 
     today_date = pd.to_datetime('today').normalize()
-    dataset_last_given_date = pd.to_datetime('2024-03-25')
+    dataset_last_given_date = pd.to_datetime('2024-06-12')
 
     day_count_difference_lastday_and_today = (today_date - dataset_last_given_date).days
     day_count_difference_requested_date_and_today = (request_date - today_date).days
@@ -198,19 +198,23 @@ def gold_price_Predict():
 
     forecast = model.predict(future)
 
-    # forecast['yhat_manipulation'] = forecast['yhat']+forecast_cbsl_diffrence+cdbsl_sea_street_difference
-    # forecast['yhat_lower_manipulation']=forecast['yhat'] 
-    # forecast['yhat_upper_manipulation']=forecast['yhat_upper']+adding_constant_value_upper
+    forecast=forecast[['ds','yhat','yhat_upper']]
+
+    cols = [col for col in forecast.columns if col != 'ds']
+
+    forecast[cols] = forecast[cols].applymap(ounce_lkr)
+
+    forecast['yhat_manipulation'] = forecast['yhat']+forecast_cbsl_diffrence+cdbsl_sea_street_difference
+    forecast['yhat_lower_manipulation']=forecast['yhat']+5000 
+    forecast['yhat_upper_manipulation']=forecast['yhat_upper']+adding_constant_value_upper
 
     # Smooth the forecasted values using a moving average
-    forecast['yhat_manipulation_smooth'] = forecast['yhat'].rolling(window=7, min_periods=1).max()
-    forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower'].rolling(window=5, min_periods=1).mean()
-    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper'].rolling(window=5, min_periods=1).max()
+    forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).max()
+    forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
+    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).max()
 
     response_dataframe=forecast[["ds","yhat_manipulation_smooth","yhat_lower_manipulation_smooth","yhat_upper_manipulation_smooth"]]
 
-    cols = [col for col in response_dataframe.columns if col != 'ds']
-    response_dataframe[cols] = response_dataframe[cols].applymap(ounce_lkr)
 
     return jsonify(response_dataframe.to_dict(orient='records'))
 
