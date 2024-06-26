@@ -44,12 +44,12 @@ function Dashboard() {
         <div className="row" style={{ marginTop: '10px', marginBottom: '10px', marginLeft: '20px', marginRight: '20px' }}>
 
             <div className="col-xl-3 col-md-6 mb-4">
-                <div className="card border-left-primary shadow h-100 py-2">
+                <div className="card border-left-primary shadow h-100 py-2 bg-info">
                     <div className="card-body">
                         <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
+                            <div className="col mr-2 ml-3">
                                 <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Gold Price(BID)</div>
+                                BID Gold Price(USD)</div>
                                 <div className="h5 mb-0 font-weight-bold text-gray-800">{price.bid} per ounce</div>
                             </div>
                             <div className="col-auto">
@@ -61,12 +61,12 @@ function Dashboard() {
             </div>
 
             <div className="col-xl-3 col-md-6 mb-4">
-                <div className="card border-left-primary shadow h-100 py-2">
+                <div className="card border-left-primary shadow h-100 py-2 bg-info">
                     <div className="card-body">
                         <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
+                            <div className="col mr-2 ml-3">
                                 <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Gold Price(ASK)</div>
+                                ASK Gold Price(USD)</div>
                                 <div className="h5 mb-0 font-weight-bold text-gray-800">{price.ask} per ounce</div>
                             </div>
                             <div className="col-auto">
@@ -78,10 +78,10 @@ function Dashboard() {
             </div>
 
             <div className="col-xl-3 col-md-6 mb-4">
-                <div className="card border-left-primary shadow h-100 py-2">
+                <div className="card border-left-primary shadow h-100 py-2 bg-info">
                     <div className="card-body">
                         <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
+                            <div className="col mr-2 ml-3">
                                 <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Change in the Price(+/-)</div>
                                 <div className="h5 mb-0 font-weight-bold text-gray-800">{price.change}</div>
@@ -95,10 +95,10 @@ function Dashboard() {
             </div>
 
             <div className="col-xl-3 col-md-6 mb-4">
-                <div className="card border-left-primary shadow h-100 py-2">
+                <div className="card border-left-primary shadow h-100 py-2 bg-info">
                     <div className="card-body">
                         <div className="row no-gutters align-items-center">
-                            <div className="col mr-2">
+                            <div className="col mr-2 ml-3">
                                 <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 percentage change in the price</div>
                                 <div className="h5 mb-0 font-weight-bold text-gray-800">{price.performance} %</div>
