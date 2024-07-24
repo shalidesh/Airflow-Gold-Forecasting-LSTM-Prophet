@@ -75,6 +75,7 @@ function ProphetPlot(startDate) {
         </div>
         ) : (
           <>
+          {/* <h1 className='mt-5 mb-3'>Rs <span style={{ fontSize: '70px', fontWeight: 'bold',color: '#224abe' }}>205000</span> ({lastdata.ds})</h1> */}
             <h1 className='mt-5 mb-3'>Rs <span style={{ fontSize: '70px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_manipulation_smooth).toFixed(2)}</span> ({lastdata.ds})</h1>
             <p>Upper Bound - Rs <span style={{ fontSize: '20px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_upper_manipulation_smooth).toFixed(2)}</span> </p>
             <p>Lower Bound - Rs  <span style={{ fontSize: '20px', fontWeight: 'bold',color: '#224abe' }}>{parseFloat(lastdata.yhat_lower_manipulation_smooth).toFixed(2)}</span></p>

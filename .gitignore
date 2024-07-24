@@ -2,3 +2,4 @@ airflow/logs/
 frontend/node_modules/
 backend/api_env
 trash_files/
+ssl_certificates/

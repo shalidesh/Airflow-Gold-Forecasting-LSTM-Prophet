@@ -204,14 +204,24 @@ def gold_price_Predict():
 
     forecast[cols] = forecast[cols].applymap(ounce_lkr)
 
-    forecast['yhat_manipulation'] = forecast['yhat']+forecast_cbsl_diffrence+cdbsl_sea_street_difference
-    forecast['yhat_lower_manipulation']=forecast['yhat']+5000 
-    forecast['yhat_upper_manipulation']=forecast['yhat_upper']+adding_constant_value_upper
+    forecast['yhat_manipulation'] = forecast['yhat_upper']+15000
+    forecast['yhat_lower_manipulation']=forecast['yhat_upper']+5000
+    forecast['yhat_upper_manipulation']=forecast['yhat_upper']+20000
+
+    # forecast['yhat_manipulation'] = forecast['yhat']+forecast_cbsl_diffrence+cdbsl_sea_street_difference
+    # forecast['yhat_lower_manipulation']=forecast['yhat']+5000 
+    # forecast['yhat_upper_manipulation']=forecast['yhat_upper']+adding_constant_value_upper
 
     # Smooth the forecasted values using a moving average
-    forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).max()
+    # forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).max()
+    # forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
+    # forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).max()
+
+    forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).mean()
     forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
-    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).max()
+    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).mean()
+
+
 
     response_dataframe=forecast[["ds","yhat_manipulation_smooth","yhat_lower_manipulation_smooth","yhat_upper_manipulation_smooth"]]
 
