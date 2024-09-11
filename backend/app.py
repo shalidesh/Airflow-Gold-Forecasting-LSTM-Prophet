@@ -15,6 +15,8 @@ import pandas as pd
 import requests
 import datetime
 import json
+import numpy as np
+import os
 from prophet.serialize import model_to_json, model_from_json
 
 app = Flask(__name__)
@@ -26,6 +28,12 @@ mongo = PyMongo(app)
 
 news_df = os.path.join("data_tables", "gold_post_data.csv")
 prediction_df = os.path.join("data_tables", "prediction.csv")
+
+train_df_path = os.path.join("data_tables", "gold_train_data.csv")
+gold_df_path = os.path.join("data_tables", "gold_databases.csv")
+
+train_df=pd.read_csv(train_df_path)
+gold_df=pd.read_csv(gold_df_path)
 
 # Load model
 with open('models/model_prophet.json', 'r') as fin:
@@ -64,11 +72,14 @@ def get_gold_price():
     header = soup.find("div", class_='flex justify-between gap-2')
 
     # Find all h3 tags within the header
-    h3_tags = header.find_all('h3')
+    h3_tags = header.find_all("div",class_='text-right font-medium')
+    span_tags = header.find_all("span")
 
     texts = [h3.text for h3 in h3_tags]
+    spantexts = [h3.text for h3 in span_tags]
+    bid, ask= texts
+    change, performance = spantexts
 
-    bid, ask, change, performance = texts
 
     price_list={
 
@@ -140,6 +151,49 @@ def news():
     df = df.where(pd.notnull(df), None) 
     return jsonify(df.to_dict(orient='records'))
 
+
+@app.route('/database', methods=['POST'])
+def database():
+
+    data = request.get_json()
+    date_string = data['date'].replace("Z", "")
+    request_date = pd.to_datetime(date_string)
+    formatted_date = request_date.strftime('%Y-%m-%d')
+    print(formatted_date)
+    database_url = gold_df.loc[gold_df['date'] == formatted_date, 'database_url'].values[0]
+    file_path = os.path.join(*database_url.split('/'))
+    df_dataset=pd.read_csv(file_path)
+    return jsonify(df_dataset.to_dict(orient='records'))
+
+
+@app.route('/comparison', methods=['POST'])
+def comparison():
+    data = request.get_json()
+    date_string = data['date'].replace("Z", "")
+    request_date = pd.to_datetime(date_string)
+    formatted_date = request_date.strftime('%Y-%m-%d')
+    print(formatted_date)
+
+    folder_path = 'BulkPredictionDatasets'
+    result_df = pd.DataFrame(columns=['date', 'yhat_manipulation_smooth'])
+
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.csv'):
+            file_path = os.path.join(folder_path, filename)
+            df = pd.read_csv(file_path)
+            filtered_df = df[df['ds'] == formatted_date]
+            if not filtered_df.empty:
+                filtered_df['date'] = filename.replace('.csv', '')
+                result_df = pd.concat([result_df, filtered_df[['date', 'yhat_manipulation_smooth','yhat_lower_manipulation_smooth','yhat_upper_manipulation_smooth']]], ignore_index=True)
+                result_df['date'] = pd.to_datetime(result_df['date'])
+                result_df = result_df.sort_values(by='date')
+                result_df = result_df.astype(str)
+
+    print(result_df.head())
+    
+    return result_df.to_json(orient='records')
+
+
 @app.route('/gold_price_history', methods=['GET'])
 def gold_price_history():
     gold_ticker = 'GC=F'
@@ -160,6 +214,15 @@ def gold_price_history():
 
     return gold_data_list
 
+
+@app.route('/real-data', methods=['POST'])
+def real_data():
+    print("togle start")
+    train = train_df.replace({np.nan: 0})
+    train['date'] = pd.to_datetime(train['date'] ,dayfirst=True, errors='coerce')
+    train['gld_price_lkr'] = train['gld_price_lkr'].apply(ounce_lkr)
+
+    return jsonify(train.to_dict(orient='records'))
 
 def ounce_lkr(x):
     price = (x / 31.1035) * 8
@@ -182,7 +245,6 @@ def gold_price_Predict():
     period=day_count_difference_lastday_and_today+day_count_difference_requested_date_and_today
 
     future_regressor = model.make_future_dataframe(periods=period)
-    print(future_regressor)
     # Make predictions for each regressor
     forecast_regressor1 = model_regressor1.predict(future_regressor)
     forecast_regressor2 = model_regressor2.predict(future_regressor)
@@ -221,10 +283,9 @@ def gold_price_Predict():
     forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
     forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).mean()
 
-
+    forecast['ds'] = pd.to_datetime(forecast['ds'], format='%a, %d %b %Y %H:%M:%S %Z')
 
     response_dataframe=forecast[["ds","yhat_manipulation_smooth","yhat_lower_manipulation_smooth","yhat_upper_manipulation_smooth"]]
-
 
     return jsonify(response_dataframe.to_dict(orient='records'))
 
@@ -241,4 +302,3 @@ def not_found(error=None):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0',debug=True, port=port)
-

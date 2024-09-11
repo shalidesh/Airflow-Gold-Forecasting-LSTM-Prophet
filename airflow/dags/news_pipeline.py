@@ -18,7 +18,7 @@ default_args = {
 }
 
 dag = DAG(
-    dag_id="News_pipeline_1",
+    dag_id="News_pipeline",
     default_args=default_args,
     schedule_interval='0 0 * * *'
 )
