@@ -1,5 +1,6 @@
 airflow/logs/
 frontend/node_modules/
-backend/api_env
+backend/api_env/
+backend/EDA/
 trash_files/
 ssl_certificates/

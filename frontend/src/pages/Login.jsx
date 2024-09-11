@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useRef } from "react";
+import { useContext, useRef ,useState} from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../context/Context";
 
@@ -8,6 +8,7 @@ function Login() {
     const userRef = useRef();
     const passwordRef = useRef();
     const { dispatch, isFetching } = useContext(Context);
+    const [error, setError] = useState(null); 
 
 
     const handleSubmit = async (e) => {
@@ -22,6 +23,7 @@ function Login() {
           dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
         } catch (err) {
           dispatch({ type: "LOGIN_FAILURE" });
+          setError("Invalid Username or Password, Please try again."); 
         }
       };
 
@@ -52,6 +54,8 @@ function Login() {
 
                     
                     <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+
+                    {error && <p style={{ color: "red" }}>{error}</p>}
                     <Link className="link" to="/register">
                           <p>Already Have a Acoount?   <span>SIGNUP</span></p>                     
                     </Link>
