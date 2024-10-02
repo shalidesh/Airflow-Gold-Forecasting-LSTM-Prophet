@@ -53,11 +53,6 @@ with open('models/model_regressor4.json', 'r') as fin:
     model_regressor4 = model_from_json(json.load(fin))
 
 
-forecast_cbsl_diffrence=4000
-cdbsl_sea_street_difference=9500
-adding_constant_value_upper=15000
-
-
 @app.route('/gold_price', methods=['GET'])
 def get_gold_price():
     headers = {
@@ -154,7 +149,6 @@ def news():
 
 @app.route('/database', methods=['POST'])
 def database():
-
     data = request.get_json()
     date_string = data['date'].replace("Z", "")
     request_date = pd.to_datetime(date_string)
@@ -165,7 +159,6 @@ def database():
     df_dataset=pd.read_csv(file_path)
     return jsonify(df_dataset.to_dict(orient='records'))
 
-
 @app.route('/comparison', methods=['POST'])
 def comparison():
     data = request.get_json()
@@ -175,21 +168,22 @@ def comparison():
     print(formatted_date)
 
     folder_path = 'BulkPredictionDatasets'
-    result_df = pd.DataFrame(columns=['date', 'yhat_manipulation_smooth'])
+    result_df = pd.DataFrame(columns=['date', 'yhat_manipulation_smooth','yhat_lower_manipulation_smooth','yhat_upper_manipulation_smooth'])
 
     for filename in os.listdir(folder_path):
         if filename.endswith('.csv'):
             file_path = os.path.join(folder_path, filename)
             df = pd.read_csv(file_path)
             filtered_df = df[df['ds'] == formatted_date]
+            print("----------")
+            print(filtered_df.head())
+            print("----------")
             if not filtered_df.empty:
                 filtered_df['date'] = filename.replace('.csv', '')
                 result_df = pd.concat([result_df, filtered_df[['date', 'yhat_manipulation_smooth','yhat_lower_manipulation_smooth','yhat_upper_manipulation_smooth']]], ignore_index=True)
                 result_df['date'] = pd.to_datetime(result_df['date'])
                 result_df = result_df.sort_values(by='date')
                 result_df = result_df.astype(str)
-
-    print(result_df.head())
     
     return result_df.to_json(orient='records')
 
@@ -237,7 +231,7 @@ def gold_price_Predict():
     request_date = pd.to_datetime(date_string)
 
     today_date = pd.to_datetime('today').normalize()
-    dataset_last_given_date = pd.to_datetime('2024-06-12')
+    dataset_last_given_date = pd.to_datetime('2024-09-27')
 
     day_count_difference_lastday_and_today = (today_date - dataset_last_given_date).days
     day_count_difference_requested_date_and_today = (request_date - today_date).days
@@ -266,22 +260,13 @@ def gold_price_Predict():
 
     forecast[cols] = forecast[cols].applymap(ounce_lkr)
 
-    forecast['yhat_manipulation'] = forecast['yhat_upper']+15000
-    forecast['yhat_lower_manipulation']=forecast['yhat_upper']+5000
-    forecast['yhat_upper_manipulation']=forecast['yhat_upper']+20000
+    forecast['yhat_manipulation'] = forecast['yhat_upper']+22000
+    forecast['yhat_lower_manipulation']=forecast['yhat_upper']+13000
+    forecast['yhat_upper_manipulation']=forecast['yhat_upper']+25000
 
-    # forecast['yhat_manipulation'] = forecast['yhat']+forecast_cbsl_diffrence+cdbsl_sea_street_difference
-    # forecast['yhat_lower_manipulation']=forecast['yhat']+5000 
-    # forecast['yhat_upper_manipulation']=forecast['yhat_upper']+adding_constant_value_upper
-
-    # Smooth the forecasted values using a moving average
-    # forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).max()
-    # forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
-    # forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).max()
-
-    forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).mean()
-    forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
-    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).mean()
+    forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).mean().round(-2)
+    forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean().round(-2)
+    forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).mean().round(-2)
 
     forecast['ds'] = pd.to_datetime(forecast['ds'], format='%a, %d %b %Y %H:%M:%S %Z')
 
