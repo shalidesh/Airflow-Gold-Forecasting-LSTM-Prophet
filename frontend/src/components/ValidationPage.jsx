@@ -18,9 +18,9 @@ function ValidationPage() {
             <div className="row">
               <div className="col-4">
                 <h5>Select the Future Date</h5>
-              </div>
-                  
+              </div>    
             </div>
+
             <div className="row">
             
                 <div className="col-4">
@@ -28,7 +28,6 @@ function ValidationPage() {
                       selected={startDate} 
                       onChange={date => setStartDate(date)} 
                       minDate={minDate}
-                      maxDate={maxDate}
                       className='form-control'
                   />
 

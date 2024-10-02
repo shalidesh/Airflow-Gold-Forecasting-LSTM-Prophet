@@ -40,11 +40,11 @@ def ounce_lkr(x):
     return rounded_price
 
 
-date_string='2024-12-11'
+date_string='2025-1-2'
 request_date = pd.to_datetime(date_string)
 
 today_date = pd.to_datetime('today').normalize()
-dataset_last_given_date = pd.to_datetime('2024-06-12')
+dataset_last_given_date = pd.to_datetime('2024-09-27')
 
 day_count_difference_lastday_and_today = (today_date - dataset_last_given_date).days
 day_count_difference_requested_date_and_today = (request_date - today_date).days
@@ -74,14 +74,14 @@ cols = [col for col in forecast.columns if col != 'ds']
 
 forecast[cols] = forecast[cols].applymap(ounce_lkr)
 
-forecast['yhat_manipulation'] = forecast['yhat_upper']+15000
-forecast['yhat_lower_manipulation']=forecast['yhat_upper']+5000
-forecast['yhat_upper_manipulation']=forecast['yhat_upper']+20000
+forecast['yhat_manipulation'] = forecast['yhat_upper']+22000
+forecast['yhat_lower_manipulation']=forecast['yhat_upper']+13000
+forecast['yhat_upper_manipulation']=forecast['yhat_upper']+25000
 
-forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).mean()
-forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean()
-forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).mean()
+forecast['yhat_manipulation_smooth'] = forecast['yhat_manipulation'].rolling(window=7, min_periods=1).mean().round(-2)
+forecast['yhat_lower_manipulation_smooth'] = forecast['yhat_lower_manipulation'].rolling(window=5, min_periods=1).mean().round(-2)
+forecast['yhat_upper_manipulation_smooth'] = forecast['yhat_upper_manipulation'].rolling(window=5, min_periods=1).mean().round(-2)
 
 response_dataframe=forecast[["ds","yhat_manipulation_smooth","yhat_lower_manipulation_smooth","yhat_upper_manipulation_smooth"]]
 
-response_dataframe.to_csv('forecast_gold_2024_09_11.csv')
+response_dataframe.to_csv('2024-10-2.csv')
