@@ -18,6 +18,13 @@ import json
 import numpy as np
 import os
 from prophet.serialize import model_to_json, model_from_json
+import joblib
+import os
+import pandas as pd
+import numpy as np
+from prophet import Prophet
+import xgboost as xgb
+from components.inference_function import forecast_up_to_date
 
 app = Flask(__name__)
 # app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
@@ -36,21 +43,22 @@ train_df=pd.read_csv(train_df_path)
 gold_df=pd.read_csv(gold_df_path)
 
 # Load model
-with open('models/model_prophet.json', 'r') as fin:
+with open('models/version_03/model_prophet.json', 'r') as fin:
     model = model_from_json(json.load(fin)) 
 
 # When you want to load the models for prediction, read them from the files
-with open('models/model_regressor1.json', 'r') as fin:
+with open('models/version_03/model_regressor1.json', 'r') as fin:
     model_regressor1 = model_from_json(json.load(fin))
 
-with open('models/model_regressor2.json', 'r') as fin:
+with open('models/version_03/model_regressor2.json', 'r') as fin:
     model_regressor2 = model_from_json(json.load(fin))
 
-with open('models/model_regressor3.json', 'r') as fin:
+with open('models/version_03/model_regressor3.json', 'r') as fin:
     model_regressor3 = model_from_json(json.load(fin))
 
-with open('models/model_regressor4.json', 'r') as fin:
+with open('models/version_03/model_regressor4.json', 'r') as fin:
     model_regressor4 = model_from_json(json.load(fin))
+
 
 
 @app.route('/gold_price', methods=['GET'])
@@ -227,6 +235,7 @@ def ounce_lkr(x):
 @app.route('/forecast_prophet', methods=['POST'])
 def gold_price_Predict():
     data = request.get_json()
+    print(data)
     date_string = data['date'].replace("Z", "")
     request_date = pd.to_datetime(date_string)
 
@@ -273,6 +282,17 @@ def gold_price_Predict():
     response_dataframe=forecast[["ds","yhat_manipulation_smooth","yhat_lower_manipulation_smooth","yhat_upper_manipulation_smooth"]]
 
     return jsonify(response_dataframe.to_dict(orient='records'))
+
+
+@app.route('/forecast_prophet1', methods=['POST'])
+def gold_price_Predict1():
+    data = request.get_json()
+    date_only = data['date'].split("T")[0]
+
+    forecast_df = forecast_up_to_date(date_only)
+
+    return jsonify(forecast_df.to_dict(orient='records'))
+
 
 @app.errorhandler(404)
 def not_found(error=None):
