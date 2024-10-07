@@ -25,6 +25,7 @@ import numpy as np
 from prophet import Prophet
 import xgboost as xgb
 from components.inference_function import forecast_up_to_date
+from components.dataset_upload import check_table,create_table,populate_table
 
 app = Flask(__name__)
 # app.config["MONGO_URI"] = "mongodb://mongo:27017/gold_data"
@@ -58,6 +59,12 @@ with open('models/version_03/model_regressor3.json', 'r') as fin:
 
 with open('models/version_03/model_regressor4.json', 'r') as fin:
     model_regressor4 = model_from_json(json.load(fin))
+
+
+# Ensure the upload folder exists
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 
 
@@ -290,8 +297,45 @@ def gold_price_Predict1():
     date_only = data['date'].split("T")[0]
 
     forecast_df = forecast_up_to_date(date_only)
+    print(forecast_df.head())
 
     return jsonify(forecast_df.to_dict(orient='records'))
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+
+    if file and file.filename.endswith('.csv'):
+        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(filepath)
+        df=pd.read_csv(filepath)
+        print(df.info())
+        df=df.astype(str)
+
+        # check_table("preprocesed_gold_data_tables")
+        # create_table("preprocesed_gold_data_tables", 
+        #             ["date VARCHAR(255)",
+        #             "gold_lkr VARCHAR(255)",
+        #             "gold_price_usd VARCHAR(255)",
+        #             "silver_price VARCHAR(255)",
+        #             "sp_500_index  VARCHAR(255)",
+        #             "nyse_com_index VARCHAR(255)",
+        #             "usd_selling_exrate VARCHAR(255)",
+        #             "gold_futures VARCHAR(255)",
+        #             "effr VARCHAR(255)"
+        #         ]), 
+        # populate_table("preprocesed_gold_data_tables", df)
+
+        return jsonify({'message': 'File successfully uploaded'}), 200
+    else:
+        return jsonify({'message': 'Please upload a CSV file'}), 400
+    
 
 
 @app.errorhandler(404)

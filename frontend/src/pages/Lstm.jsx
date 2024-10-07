@@ -2,6 +2,7 @@ import React from 'react'
 import LeftBar from '../components/LeftBar'
 import TopBar from '../components/TopBar'
 import Footer from '../components/Footer'
+import ProphetXgboostCharts from '../components/ProphetXgboostCharts'
 
 function Lstm() {
     return (
@@ -13,6 +14,7 @@ function Lstm() {
                 <div id="content">
     
                     <TopBar/>
+                    <ProphetXgboostCharts />
     
                 </div>
                 

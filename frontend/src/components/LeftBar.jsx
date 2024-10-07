@@ -42,25 +42,14 @@ function LeftBar() {
                         <Link to="/prophet">
                             <a className="collapse-item" >Prophet</a>
                         </Link>
-                        <Link to="/lstm">
-                            <a className="collapse-item" >LSTM</a>
+                        <Link to="/prophet1">
+                            <a className="collapse-item" >Prophet+XgBoost</a>
 
                         </Link>
                         
                     </div>
                 </div>
             </li>
-
-            <Link to="/customer">
-                <li className="nav-item">
-                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                        aria-expanded="true" aria-controls="collapseUtilities">
-                        <i className="fas fa-fw fa-wrench"></i>
-                        <span>Customer Identification</span>
-                    </a>
-                    
-                </li>
-            </Link>
 
             <Link to="/news">
                 <li className="nav-item">
@@ -93,6 +82,28 @@ function LeftBar() {
                     </div>
                 </div>
             </li>
+
+            <Link to="/customer">
+                <li className="nav-item">
+                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                        aria-expanded="true" aria-controls="collapseUtilities">
+                        <i className="fas fa-fw fa-wrench"></i>
+                        <span>Customer Identification</span>
+                    </a>
+                    
+                </li>
+            </Link>
+
+            <Link to="/model_training">
+                <li className="nav-item">
+                    <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                        aria-expanded="true" aria-controls="collapseUtilities">
+                        <i className="fas fa-fw fa-wrench"></i>
+                        <span>Model Traning</span>
+                    </a>
+                    
+                </li>
+            </Link>
 
             <div className="text-center d-none d-md-inline">
                 <button className="rounded-circle border-0" id="sidebarToggle"></button>
