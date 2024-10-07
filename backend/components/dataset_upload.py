@@ -35,12 +35,4 @@ def populate_table(table_name, data):
             # Commit the transaction
             conn.commit()
 
-
-# upload  table
-def upload_table(table_name):
-    with psycopg2.connect(host=host, port=port, database=database, user=user, password=password) as conn:
-        with conn.cursor() as cur:
-            cur.execute(f"""
-                        COPY {table_name} TO '/var/lib/postgresql/csv/{table_name}.csv' DELIMITER ',' CSV HEADER;
-                """)
                     
